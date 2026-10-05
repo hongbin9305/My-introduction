@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>하홍빈 | 사람과 기술을 연결하며 성장하는 사람</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, "Noto Sans KR", sans-serif;
+      background: #f5f7fa;
+      color: #172033;
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    a:focus,
+    button:focus {
+      outline: 3px solid #ffb703;
+      outline-offset: 4px;
+    }
+
+    .container {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    nav {
+      min-height: 64px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 22px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .hero {
+      padding: 38px 0 26px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      font-weight: 800;
+      color: #176b87;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(32px, 5vw, 54px);
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+    }
+
+    .intro {
+      max-width: 760px;
+      margin: 14px 0 0;
+      font-size: 18px;
+      color: #4b5563;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 24px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid #dce3ea;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+    }
+
+    .number {
+      color: #176b87;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .card h2 {
+      margin: 6px 0 8px;
+      font-size: 21px;
+    }
+
+    .summary {
+      margin: 0 0 14px;
+      min-height: 52px;
+      color: #4b5563;
+    }
+
+    .toggle {
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 11px 14px;
+      background: #176b87;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .toggle:hover {
+      background: #10556c;
+    }
+
+    .detail {
+      display: none;
+      margin-top: 16px;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 14px;
+    }
+
+    .detail.open {
+      display: block;
+    }
+
+    .detail p {
+      margin: 8px 0;
+      font-size: 15px;
+    }
+
+    .detail strong {
+      color: #176b87;
+    }
+
+    .learning {
+      margin-top: 24px;
+      padding: 20px;
+      border-radius: 16px;
+      background: #eaf4f7;
+    }
+
+    .learning h2 {
+      margin: 0 0 6px;
+      font-size: 20px;
+    }
+
+    .learning p {
+      margin: 0;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      background: #ffffff;
+      border: 1px solid #c8dbe2;
+      border-radius: 999px;
+      padding: 5px 11px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .evidence {
+      padding: 32px 0 46px;
+    }
+
+    .evidence-box {
+      background: #ffffff;
+      border: 1px solid #dce3ea;
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .evidence-box h2 {
+      margin-top: 0;
+    }
+
+    .evidence-link {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: #172033;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 800;
+    }
+
+    footer {
+      padding: 22px 0;
+      border-top: 1px solid #dce3ea;
+      color: #5b6473;
+      font-size: 14px;
+    }
+
+    @media (max-width: 850px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .summary {
+        min-height: auto;
+      }
+
+      nav {
+        align-items: flex-start;
+        padding: 16px 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <nav class="container" aria-label="주요 메뉴">
+      <a class="logo" href="#top">HONG BIN</a>
+
+      <div class="nav-links">
+        <a href="#strengths">강점</a>
+        <a href="#evidence">근거</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+
+    <section class="hero container">
+      <p class="eyebrow">ABOUT ME</p>
+
+      <h1>사람과 기술을 연결하며<br>성장하고 있습니다.</h1>
+
+      <p class="intro">
+        새로운 환경에서 사람들과 소통하며 문제를 해결해 온 경험과,
+        IT 인프라 분야에 도전하며 성장하고 있는 과정을 소개하는 페이지입니다.
+      </p>
+    </section>
+
+    <section id="strengths" class="container" aria-labelledby="strength-title">
+
+      <h2 id="strength-title" class="section-title">제가 보여드리고 싶은 세 가지</h2>
+
+      <div class="cards">
+
+        <article class="card">
+          <span class="number">01</span>
+          <h2>소통과 문제 해결</h2>
+
+          <p class="summary">
+            교육 현장에서 다양한 학생들과 소통하며 문제를 조율한 경험이 있습니다.
+          </p>
+
+          <button
+            class="toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="detail1">
+            경험 자세히 보기
+          </button>
+
+          <div class="detail" id="detail1">
+            <p>
+              <strong>상황</strong><br>
+              고등학교에서 과학 수업과 학생 생활지도를 담당하며
+              다양한 학생들의 요구와 학교 운영 기준을 함께 고려해야 했습니다.
+            </p>
+
+            <p>
+              <strong>행동</strong><br>
+              학생들의 이야기를 먼저 듣고 상황을 파악한 뒤,
+              필요한 내용을 학생들과 다시 소통하며 해결 방법을 조율했습니다.
+            </p>
+
+            <p>
+              <strong>결과</strong><br>
+              학생들과 지속적으로 소통하며 수업과 학생 활동을 운영했고,
+              여러 이해관계 속에서 문제를 단계적으로 해결하는 경험을 쌓았습니다.
+            </p>
+          </div>
+        </article>
+
+        <article class="card">
+          <span class="number">02</span>
+          <h2>관계를 만드는 실행력</h2>
+
+          <p class="summary">
+            영업 현장에서 관계가 어려워진 거래처를 다시 찾아가 접점을 만들었습니다.
+          </p>
+
+          <button
+            class="toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="detail2">
+            경험 자세히 보기
+          </button>
+
+          <div class="detail" id="detail2">
+            <p>
+              <strong>상황</strong><br>
+              MD 업무 중 홍보물에 대한 불만으로 방문을 원하지 않는 거래처가 있었습니다.
+            </p>
+
+            <p>
+              <strong>행동</strong><br>
+              관계를 단번에 바꾸려고 하기보다 다시 방문해 이야기를 듣고,
+              부담이 적은 작은 접점부터 만들어 갔습니다.
+            </p>
+
+            <p>
+              <strong>결과</strong><br>
+              관계를 다시 회복했고,
+              이후 해당 거래처에서 기존에 취급하지 않던 제품의 사입까지 이어졌습니다.
+            </p>
+          </div>
+        </article>
+
+        <article class="card">
+          <span class="number">03</span>
+          <h2>새로운 분야에 대한 도전</h2>
+
+          <p class="summary">
+            비전공 분야인 IT 인프라와 정보보안을 배우며 직접 구축 경험을 만들고 있습니다.
+          </p>
+
+          <button
+            class="toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="detail3">
+            경험 자세히 보기
+          </button>
+
+          <div class="detail" id="detail3">
+            <p>
+              <strong>상황</strong><br>
+              새로운 진로를 준비하며 네트워크와 서버 분야를 처음부터 학습하기 시작했습니다.
+            </p>
+
+            <p>
+              <strong>행동</strong><br>
+              네트워크 기초, Linux, Database, System Engineering을 학습하고
+              GNS3에서 VLAN, Routing, OSPF, DHCP를 활용한 네트워크를 직접 구축했습니다.
+            </p>
+
+            <p>
+              <strong>결과</strong><br>
+              단순히 명령어를 따라 하는 단계에서 벗어나,
+              통신 장애의 원인을 구간별로 확인하고 해결 과정을 기록할 수 있게 되었습니다.
+            </p>
+          </div>
+        </article>
+
+      </div>
+
+      <div class="learning">
+        <h2>현재 배우고 있는 것</h2>
+
+        <p>
+          IT 인프라와 정보보안 분야의 기본기를 실습 중심으로 학습하고 있습니다.
+        </p>
+
+        <div class="tags" aria-label="현재 학습 분야">
+          <span class="tag">Network</span>
+          <span class="tag">Linux</span>
+          <span class="tag">Database</span>
+          <span class="tag">System</span>
+          <span class="tag">Security</span>
+        </div>
+      </div>
+
+    </section>
+
+    <section id="evidence" class="evidence">
+      <div class="container">
+        <div class="evidence-box">
+
+          <h2>공개 가능한 활동 근거</h2>
+
+          <p>
+            이 페이지의 제작 과정과 IT 학습 결과를 GitHub에 기록하고 있습니다.
+            개인 연락처, 주소, 생년월일과 같은 개인정보는 공개하지 않습니다.
+          </p>
+
+          <a
+            class="evidence-link"
+            href="https://github.com/hongbin9305/My-introduction"
+            target="_blank"
+            rel="noopener noreferrer">
+            GitHub 저장소에서 확인하기
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      이 페이지는 AI의 도움을 받아 제작하고, 공개 범위와 내용은 직접 판단했습니다.
+    </div>
+  </footer>
+
+  <script>
+    const buttons = document.querySelectorAll(".toggle");
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const targetId = button.getAttribute("aria-controls");
+        const detail = document.getElementById(targetId);
+        const isOpen = detail.classList.toggle("open");
+
+        button.setAttribute("aria-expanded", isOpen);
+
+        button.textContent = isOpen
+          ? "경험 접기"
+          : "경험 자세히 보기";
+      });
+    });
+  </script>
+
+</body>
+</html>
