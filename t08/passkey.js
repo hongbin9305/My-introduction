@@ -61,6 +61,15 @@ el('add-passkey').onclick=()=>work(async()=>{
  if(!y.verified)throw Error('추가 패스키 확인 실패');
  await view();
 });
+el('pair-iphone').onclick=()=>work(async()=>{
+ const out=await api('pair/start');
+ const link=location.origin+'/pair.html#ticket='+encodeURIComponent(out.ticket);
+ const qr=await import('https://esm.sh/qrcode@1.5.4?bundle');
+ await qr.toCanvas(el('pair-qr'),link,{width:250,margin:2,errorCorrectionLevel:'M'});
+ el('pair-link').href=link;el('pair-link').textContent='아이폰에 공유할 등록 링크';
+ el('pair-ui').hidden=false;
+ status('아이폰 카메라로 QR코드를 스캔해 Safari에서 패스키를 등록하세요. 유효시간 10분.');
+});
 el('logout-passkey').onclick=()=>work(async()=>{
  await api('logout');clear();await view();status('로그아웃했습니다. 이전 세션은 서버에서 폐기되어 재사용할 수 없습니다.');
 });
