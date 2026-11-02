@@ -77,6 +77,18 @@ el('pair-iphone').onclick=()=>work(async()=>{
  el('pair-ui').hidden=false;
  status('아이폰 카메라로 QR코드를 스캔해 Safari에서 패스키를 등록하세요. 유효시간 10분.');
 });
+el('audit-isolation').onclick=()=>work(async()=>{
+ const target=el('audit-target').value.trim().toLowerCase();
+ if(!target)throw Error('다른 테스트 계정명을 입력해 주세요.');
+ const before=(await api('private')).records.length;
+ const request={action:'private',targetHandle:target};
+ const response=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(request),cache:'no-store'});
+ const reply=await response.json();
+ const after=(await api('private')).records.length;
+ const result={actor:activeHandle,foreign_target:target,request:'POST private with targetHandle',http_status:response.status,response_error:reply.error||null,own_count_before:before,own_count_after:after,token:'[REDACTED]',passed:response.status===403&&before===after};
+ el('audit-output').textContent=JSON.stringify(result,null,2);
+ status(result.passed?'교차 계정 접근 거절 성공 (HTTP 403) · 데이터 건수 불변':'시험 실패 또는 타인 계정 없음 · 응답을 확인하세요.');
+},'계정 격리 시험');
 el('logout-passkey').onclick=()=>work(async()=>{
  await api('logout');clear();await view();status('로그아웃했습니다. 이전 세션은 서버에서 폐기되어 재사용할 수 없습니다.');
 });
