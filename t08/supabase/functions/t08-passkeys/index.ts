@@ -34,6 +34,43 @@ Deno.serve(async(req)=>{
  const {action,...b}=await req.json();
  const me=await account(req);
  if(action==='health')return respond(200,{ok:true,mode:'WebAuthn passkey'});
+ if(action==='pair/start'){
+  if(!me)return respond(401,{error:'먼저 PC에서 패스키 로그인하세요.'});
+  const ticket=random();
+  const {error}=await db.from('t08_pair_tickets').insert({token_hash:await hash(ticket),account_id:me.id});
+  if(error)throw new Error('기기 연결 코드 발급 실패');
+  return respond(200,{ticket,expiresInSeconds:600});
+ }
+ if(action==='pair/options'){
+  const ticket=String(b.ticket||'');
+  if(!/^[A-Za-z0-9_-]{40,80}$/.test(ticket))return respond(401,{error:'연결 코드가 올바르지 않습니다.'});
+  const {data:t}=await db.from('t08_pair_tickets').select('account_id,expires_at,used').eq('token_hash',await hash(ticket)).maybeSingle();
+  if(!t||t.used||Date.parse(t.expires_at)<=Date.now())return respond(401,{error:'연결 코드가 만료됐거나 사용됐습니다.'});
+  const {data:a}=await db.from('t08_accounts').select('handle').eq('id',t.account_id).single();
+  if(!a)return respond(404,{error:'계정을 찾을 수 없습니다.'});
+  const {data:keys}=await db.from('t08_credentials').select('id,transports').eq('account_id',t.account_id);
+  const options=await generateRegistrationOptions({rpName:'ALEPH T08 Passkey',rpID:RP,userName:a.handle,userDisplayName:a.handle,userID:crypto.getRandomValues(new Uint8Array(32)),attestationType:'none',authenticatorSelection:{authenticatorAttachment:'platform',residentKey:'preferred',userVerification:'required'},excludeCredentials:(keys||[]).map(x=>({id:x.id,transports:x.transports||[]}))});
+  const {data:ch,error}=await db.from('t08_challenges').insert({account_id:t.account_id,handle:a.handle,kind:'add',challenge:options.challenge}).select('id').single();
+  if(error)throw new Error('패스키 질문 발급 실패');
+  return respond(200,{challengeId:ch.id,options,handle:a.handle});
+ }
+ if(action==='pair/verify'){
+  const ticket=String(b.ticket||'');
+  if(!/^[A-Za-z0-9_-]{40,80}$/.test(ticket))return respond(401,{error:'연결 코드 오류'});
+  const tokenHash=await hash(ticket);
+  const {data:t}=await db.from('t08_pair_tickets').update({used:true}).eq('token_hash',tokenHash).eq('used',false).gt('expires_at',new Date().toISOString()).select('account_id').maybeSingle();
+  if(!t)return respond(401,{error:'연결 코드 재사용 또는 만료'});
+  const {data:a}=await db.from('t08_accounts').select('handle').eq('id',t.account_id).single();
+  if(!a)return respond(404,{error:'사용자를 찾을 수 없습니다.'});
+  const ch=await claim(String(b.challengeId||''),'add',a.handle);
+  if(ch.account_id!==t.account_id)return respond(403,{error:'다른 계정의 질문입니다.'});
+  const check=await verifyRegistrationResponse({response:b.response,expectedChallenge:ch.challenge,expectedOrigin:ROOT,expectedRPID:RP,requireUserVerification:true});
+  if(!check.verified||!check.registrationInfo)return respond(403,{error:'패스키 등록 거절'});
+  const k=check.registrationInfo.credential;
+  const {error}=await db.from('t08_credentials').insert({id:k.id,account_id:t.account_id,public_key:enc(k.publicKey),counter:k.counter,transports:k.transports||[],nickname:'iPhone 패스키'});
+  if(error)throw new Error('공개키 저장 실패');
+  return respond(200,{verified:true,nickname:'iPhone 패스키'});
+ }
  if(action==='register/options'||action==='add/options'){
   if(action==='add/options'&&!me)return respond(401,{error:'패스키 로그인 필요'});
   const handle=action==='add/options'?(await db.from('t08_accounts').select('handle').eq('id',me.id).single()).data?.handle:String(b.handle||'').trim().toLowerCase();
