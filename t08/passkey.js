@@ -10,10 +10,13 @@ async function api(action,data={}){
  if(!r.ok)throw Error('HTTP '+r.status+' · '+(answer.error||'요청 거절'));
  return answer;
 }
-async function work(fn){
+async function work(fn,context='작업'){
  for(const b of document.querySelectorAll('#vault button'))b.disabled=true;
- try{await fn()}catch(e){if(e?.name==='NotAllowedError'){status('패스키 생성이 완료되지 않았습니다. 기존 패스키는 유지됩니다. 같은 Google 비밀번호 관리자에서 같은 계정의 중복 패스키가 거절될 수 있습니다. Windows Hello나 다른 패스키 저장소로 등록해 주세요. ('+e.name+')')}else{status(e.message||String(e))}}
- finally{for(const b of document.querySelectorAll('#vault button'))b.disabled=false}
+ try{await fn()}catch(e){
+  const name=e?.name||'Error';
+  if(name==='NotAllowedError')status(context+' 취소 또는 사용 가능한 패스키 선택 실패 (NotAllowedError). 현재 기기에 이 사이트 패스키가 있는지 확인해 주세요.');
+  else status(context+' 오류: '+name+' · '+(e?.message||String(e)));
+ }finally{for(const b of document.querySelectorAll('#vault button'))b.disabled=false}
 }
 function save(loginToken,handle){token=loginToken;activeHandle=handle;sessionStorage.setItem('t08_token',token);sessionStorage.setItem('t08_handle',handle)}
 function clear(){token='';activeHandle='';sessionStorage.removeItem('t08_token');sessionStorage.removeItem('t08_handle')}
@@ -46,13 +49,17 @@ el('register-passkey').onclick=()=>work(async()=>{
  save(y.token,handle);await view();
 });
 el('login-passkey').onclick=()=>work(async()=>{
- const handle=el('login-handle').value.trim().toLowerCase(),x=await api('login/options',{handle,discoverable:true});
- status('기기에서 지문·PIN·보안 키 인증을 완료해 주세요.');
+ const handle=el('login-handle').value.trim().toLowerCase();
+ if(!handle){status('사용자명 demo_alpha를 입력하세요.');return}
+ status('서버에 새 로그인 질문을 요청하고 있어요.');
+ const x=await api('login/options',{handle,discoverable:false});
+ status('서버 질문 발급 완료. 이 기기에 등록된 패스키 선택 및 Face ID를 진행해 주세요.');
  const credential=await startAuthentication({optionsJSON:x.options});
+ status('패스키 서명 완료. 서버에서 서명을 확인하고 있어요.');
  const y=await api('login/verify',{handle,challengeId:x.challengeId,response:credential});
  if(!y.verified)throw Error('서명 검증 실패');
  save(y.token,handle);await view();
-});
+},'패스키 로그인');
 el('add-passkey').onclick=()=>work(async()=>{
  const x=await api('add/options'),nickname=el('extra-nickname').value.trim()||'추가 패스키';
  status('두 번째 패스키를 사용할 기기를 선택해 승인해 주세요.');
