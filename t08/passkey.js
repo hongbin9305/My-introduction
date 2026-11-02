@@ -12,7 +12,7 @@ async function api(action,data={}){
 }
 async function work(fn){
  for(const b of document.querySelectorAll('#vault button'))b.disabled=true;
- try{await fn()}catch(e){if(e?.name==='NotAllowedError'){status('패스키 동작을 취소했거나 기기 확인이 거절됐습니다. 서버에는 패스키가 등록되지 않았습니다.')}else{status(e.message||String(e))}}
+ try{await fn()}catch(e){if(e?.name==='NotAllowedError'){status('패스키 생성이 완료되지 않았습니다. 기존 패스키는 유지됩니다. 같은 Google 비밀번호 관리자에서 같은 계정의 중복 패스키가 거절될 수 있습니다. Windows Hello나 다른 패스키 저장소로 등록해 주세요. ('+e.name+')')}else{status(e.message||String(e))}}
  finally{for(const b of document.querySelectorAll('#vault button'))b.disabled=false}
 }
 function save(loginToken,handle){token=loginToken;activeHandle=handle;sessionStorage.setItem('t08_token',token);sessionStorage.setItem('t08_handle',handle)}
