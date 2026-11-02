@@ -132,6 +132,14 @@ Deno.serve(async(req)=>{
  }
  if(!me)return respond(401,{error:'패스키 로그인 후 이용할 수 있습니다.'});
  if(action==='private'){
+  const targetHandle=typeof b.targetHandle==='string'?b.targetHandle.trim().toLowerCase():'';
+  const targetId=typeof b.account_id==='string'?b.account_id:'';
+  if(targetHandle){
+   const {data:target}=await db.from('t08_accounts').select('id').eq('handle',targetHandle).maybeSingle();
+   if(!target)return respond(404,{error:'자료를 찾을 수 없습니다.'});
+   if(target.id!==me.id)return respond(403,{error:'다른 계정의 자료는 열 수 없습니다.'});
+  }
+  if(targetId&&targetId!==me.id)return respond(403,{error:'다른 계정의 자료는 열 수 없습니다.'});
   const {data,error}=await db.from('t08_private').select('id,title,body').eq('account_id',me.id).order('created_at');
   if(error)throw new Error('조회 실패');
   return respond(200,{records:data||[]});
