@@ -46,7 +46,7 @@ el('register-passkey').onclick=()=>work(async()=>{
  save(y.token,handle);await view();
 });
 el('login-passkey').onclick=()=>work(async()=>{
- const handle=el('login-handle').value.trim().toLowerCase(),x=await api('login/options',{handle});
+ const handle=el('login-handle').value.trim().toLowerCase(),x=await api('login/options',{handle,discoverable:true});
  status('기기에서 지문·PIN·보안 키 인증을 완료해 주세요.');
  const credential=await startAuthentication({optionsJSON:x.options});
  const y=await api('login/verify',{handle,challengeId:x.challengeId,response:credential});
