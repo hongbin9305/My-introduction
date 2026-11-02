@@ -78,3 +78,23 @@ WebAuthn(FIDO2) 기반 패스키를 사용했다. 브라우저 `@simplewebauthn/
 - Edge Function `private` 요청에 `targetHandle` 또는 `account_id`가 전달될 경우, 현재 인증한 계정과 다르면 실제 HTTP 403을 반환하도록 보완했다. 데이터 반환 쿼리는 서버에서 인증 계정의 `account_id`만 사용한다.
 - 공개 소개 페이지에는 로그인 후 사용 가능한 `계정 격리 자동 확인`을 추가했다. 두 번째 테스트 계정이 실제 등록되면 양쪽 계정에서 이 버튼을 눌러, **HTTP 요청/응답 상태 403과 본인 데이터 건수 전후 불변**을 토큰 제거 상태로 확인한다.
 - 첫 번째 계정의 두 번째 패스키 등록·하나 삭제·남은 iPhone 패스키 Safari 로그인 성공까지 검증했고, 다른 계정의 패스키 생성 및 양방향 결과는 아직 수행되지 않았다.
+
+## 실측 교차계정 접근 차단 · 2026-11-02
+
+실제 iPhone 브라우저에서 `demo_beta` 패스키 인증 후 `demo_alpha`를 대상으로 비공개 자료 조회를 요청한 화면 캡처에서 확인한 결과:
+
+```json
+{
+  "actor": "demo_beta",
+  "foreign_target": "demo_alpha",
+  "request": "POST private with targetHandle",
+  "http_status": 403,
+  "response_error": "다른 계정의 자료는 열 수 없습니다.",
+  "own_count_before": 3,
+  "own_count_after": 3,
+  "token": "[REDACTED]",
+  "passed": true
+}
+```
+
+판정: B→A의 타인 자료 조회는 HTTP 403으로 거절됐고, B의 비공개 자료 건수는 시험 전후 모두 3건. 이 결과는 실제 사용자 제공 화면에 기반한다. **A→B 반대 방향 시험은 아직 미실시**다.
