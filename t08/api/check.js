@@ -1,8 +1,0 @@
-module.exports=async function handler(req,res){res.setHeader('Cache-Control','no-store');if(req.method!=='GET')return res.status(405).end();
- const url='https://krgebzcfvgflrkjisaxd.supabase.co/functions/v1/t08-passkeys',origin='https://plan-do-see-t08-hongbin9305.vercel.app';
- async function call(action,rest={}){try{const r=await fetch(url,{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:JSON.stringify({action,...rest})});const body=await r.json();return {status:r.status,...body}}catch(e){return {status:0,error:String(e.message)}}}
- const [health,denied,one,two]=await Promise.all([call('health'),call('private'),call('register/options',{handle:'audit_demo'}),call('register/options',{handle:'audit_demo'})]);
- let invalid=null,replay=null;
- if(one.challengeId){invalid=await call('register/verify',{handle:'audit_demo',challengeId:one.challengeId,response:{id:'tampered'}});replay=await call('register/verify',{handle:'audit_demo',challengeId:one.challengeId,response:{id:'tampered'}})}
- return res.status(200).json({server_health:{status:health.status,ok:health.ok||false},anonymous_private:{status:denied.status,error:denied.error},registration_new_challenge:{first_status:one.status,second_status:two.status,different:!!one.options?.challenge&&one.options.challenge!==two.options?.challenge},tampered_registration:{status:invalid?.status,error:invalid?.error},replayed_registration:{status:replay?.status,error:replay?.error}});
-};
