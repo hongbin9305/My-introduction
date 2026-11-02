@@ -115,7 +115,7 @@ Deno.serve(async(req)=>{
   if(!who)return respond(401,{error:'등록된 패스키를 찾을 수 없습니다.'});
   const {data:keys}=await db.from('t08_credentials').select('id,transports').eq('account_id',who.id);
   if(!keys?.length)return respond(401,{error:'등록된 패스키가 없습니다.'});
-  const options=await generateAuthenticationOptions({rpID:RP,allowCredentials:keys.map(x=>({id:x.id,transports:x.transports||[]})),userVerification:'required'});
+  const options=await generateAuthenticationOptions({rpID:RP,...(b.discoverable?{}:{allowCredentials:keys.map(x=>({id:x.id,transports:x.transports||[]}))}),userVerification:'required'});
   const {data,error}=await db.from('t08_challenges').insert({account_id:who.id,handle,kind:'login',challenge:options.challenge}).select('id').single();
   if(error)throw new Error('질문 발급 실패');
   return respond(200,{challengeId:data.id,options});
