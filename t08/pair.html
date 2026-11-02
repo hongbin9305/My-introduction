@@ -1,0 +1,21 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>T08 아이폰 패스키 등록</title><style>body{font:16px/1.7 system-ui,-apple-system,sans-serif;background:#101e38;color:white;margin:0;padding:28px}main{max-width:520px;margin:35px auto;background:white;color:#173354;border-radius:18px;padding:26px}button{border:0;border-radius:10px;background:#315be8;color:white;font-size:18px;padding:14px 20px;width:100%;margin:14px 0}p{overflow-wrap:anywhere}.muted{color:#58687f}</style></head><body><main><h1>아이폰 패스키 등록</h1><p>PC의 <strong>demo_alpha</strong> 계정에 아이폰 패스키를 추가합니다. 아이폰 Safari에서 Face ID 또는 화면 잠금을 승인해 주세요.</p><p class="muted">PC 블루투스 연결이 필요 없고, 개인키는 아이폰의 패스키 저장소를 벗어나지 않습니다. 연결 코드는 10분 후 만료되고 1회만 사용됩니다.</p><button id="register">아이폰에서 패스키 생성</button><p id="message" role="status">패스키 등록 준비됨</p></main><script type="module">
+import {startRegistration} from 'https://esm.sh/@simplewebauthn/browser@13.2.2?bundle';
+const endpoint='https://krgebzcfvgflrkjisaxd.supabase.co/functions/v1/t08-passkeys';
+const ticket=new URLSearchParams(location.hash.slice(1)).get('ticket')||'';
+history.replaceState(null,'',location.pathname);
+const status=s=>document.getElementById('message').textContent=s;
+document.getElementById('register').onclick=async()=>{
+const button=document.getElementById('register');button.disabled=true;
+try{
+if(!ticket)throw Error('PC에서 발급한 등록 링크가 필요합니다.');
+const api=async(action,body={})=>{const r=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,ticket,...body})});const json=await r.json();if(!r.ok)throw Error('HTTP '+r.status+' · '+(json.error||'오류'));return json};
+const x=await api('pair/options');
+status('아이폰에서 Face ID 또는 화면 잠금을 승인하세요.');
+const credential=await startRegistration({optionsJSON:x.options});
+const y=await api('pair/verify',{challengeId:x.challengeId,response:credential});
+if(!y.verified)throw Error('서버 검증 실패');
+status('등록 성공! PC의 패스키 목록에서 새로고침하면 iPhone 패스키가 표시됩니다. 아이폰에서는 창을 닫아도 됩니다.');
+button.textContent='등록 완료';
+}catch(e){status(e.name==='NotAllowedError'?'아이폰에서 등록을 취소했습니다. 다시 누르면 재시도할 수 있습니다.':e.message);button.disabled=false}
+};
+</script></body></html>
