@@ -14,7 +14,7 @@
 <section class="section"><h2>논문과 결과의 관계</h2><p>가설: <strong>표준화를 하면 같은 RBF-SVM의 평균 분류 정확도가 높아질 것이다.</strong> 실제 20회 비교에서는 원본 조건의 평균 정확도가 더 높아 가설이 지지되지 않았습니다. 따라서 사용자가 전처리를 자동으로 선택하지 않고, <strong>같은 분할에서 성능을 검증한 뒤 결정하도록</strong> 이 앱을 만들었습니다.</p><p class="muted">출처: 하홍빈, T10 「AI 전처리는 언제 도움이 되는가?」 (2026.11.03), scikit-learn Digits 1,797건, <code>outputs/fold_metrics.csv</code>. 실험 코드는 Python·scikit-learn으로 실행되었으며 이 앱은 그 결과를 표시·비교하는 정적 웹 도구입니다.</p><p><a href="https://hongbin-br-a-portfolio.vercel.app/paper.html" target="_blank" rel="noopener noreferrer">논문 핵심 결과 읽기</a> · <a href="https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_digits.html" target="_blank" rel="noopener noreferrer">공개 데이터 출처</a></p></section>
 </main><footer>© 2026 하홍빈 · 개인정보 입력 불필요 · 실험 결과 검증용 교육 앱 · 평가 수치의 출처를 명시합니다.</footer></div><script>
 'use strict';
-const PAPER=[[5,10],[4,12],[5,5],[7,9],[2,5],[2,7],[7,12],[7,11],[3,5],[2,11],[2,6],[4,7],[9,10],[3,7],[6,12],[7,10],[7,13],[6,14],[2,6],[3,7]].map((v,i)=>({run:i+1,raw:v[0],std:v[1],n:450}));
+const PAPER=[[5,10],[4,12],[5,5],[7,9],[2,5],[2,7],[7,12],[7,11],[3,5],[2,11],[4,6],[4,7],[9,10],[3,7],[6,12],[7,10],[7,13],[6,14],[2,6],[3,7]].map((v,i)=>({run:i+1,raw:v[0],std:v[1],n:450}));
 let data=PAPER.map(x=>({...x}));let selected=-1;let fromPaper=true;
 const el=id=>document.getElementById(id);
 const fmt=x=>(x*100).toFixed(2)+'%';
